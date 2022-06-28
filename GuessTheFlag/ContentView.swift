@@ -11,7 +11,9 @@ struct ContentView: View {
     @State private var alertMessage = ""
     @State private var showingAlert = false
     @State private var score = 0
+    @State private var questionCount = 0
     
+    @State private var showRestartAlert = false
     
     @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Spain", "UK", "US"].shuffled()
     @State private var correctAnswer = Int.random(in: 0...2)
@@ -40,7 +42,11 @@ struct ContentView: View {
                     }
                     ForEach(0..<3) { number in
                         Button {
-                            showScore(number)
+                            if questionCount == 7 {
+                                showFinalScore(number)
+                            } else {
+                                showScore(number)
+                            }
                         } label: {
                             Image(countries[number])
                                 .renderingMode(.original)
@@ -70,6 +76,9 @@ struct ContentView: View {
         } message: {
             Text("Your score is \(score)")
         }
+        .alert(alertMessage, isPresented: $showRestartAlert) {
+            Button("Restart", action: restartGame)
+        }
     }
     
     private func showScore(_ number: Int) {
@@ -77,15 +86,32 @@ struct ContentView: View {
             alertMessage = "Correct"
             score += 1
         } else {
-            alertMessage = "Wrong"
+            alertMessage = "Wrong, That’s the flag of \(countries[number])"
             score -= 1
         }
         showingAlert = true
+        questionCount += 1
+    }
+    
+    private func showFinalScore(_ number: Int) {
+        if number == correctAnswer {
+            score += 1
+        } else {
+            score -= 1
+        }
+        alertMessage = "Your final score is \(score)"
+        showRestartAlert = true
     }
     
     private func askQuestion() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
+    }
+    
+    private func restartGame() {
+        questionCount = 0
+        score = 0
+        askQuestion()
     }
 }
 
