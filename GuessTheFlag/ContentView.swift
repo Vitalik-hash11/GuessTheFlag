@@ -30,8 +30,7 @@ struct ContentView: View {
             VStack {
                 Spacer()
                 Text("Guess the flag")
-                    .font(.largeTitle.bold())
-                    .foregroundColor(.white)
+                    .titleStyle()
                 VStack {
                     VStack {
                         Text("Choose the flag of")
@@ -48,11 +47,7 @@ struct ContentView: View {
                                 showScore(number)
                             }
                         } label: {
-                            Image(countries[number])
-                                .renderingMode(.original)
-                                .padding()
-                                .clipShape(Capsule())
-                                .shadow(radius: 10)
+                            FlagImage(countryName: countries[number])
                         }
                     }
                 }
@@ -112,6 +107,33 @@ struct ContentView: View {
         questionCount = 0
         score = 0
         askQuestion()
+    }
+}
+
+struct FlagImage: View {
+    var countryName: String
+    
+    var body: some View {
+        Image(countryName)
+            .renderingMode(.original)
+            .padding()
+            .clipShape(Capsule())
+            .shadow(radius: 10)
+    }
+}
+
+struct Title: ViewModifier {
+    
+    func body(content: Content) -> some View {
+        content
+            .font(.largeTitle.bold())
+            .foregroundColor(.white)
+    }
+}
+
+extension View {
+    func titleStyle() -> some View {
+        modifier(Title())
     }
 }
 
